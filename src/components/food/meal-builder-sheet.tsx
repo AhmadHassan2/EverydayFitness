@@ -24,6 +24,8 @@ const itemSchema = z.object({
   protein: decimalField({ max: LIMITS.macro, label: "Protein" }),
   carbs: decimalField({ max: LIMITS.macro, label: "Carbs" }),
   fat: decimalField({ max: LIMITS.macro, label: "Fat" }),
+  sodium: decimalField({ max: 100_000, label: "Sodium" }),
+  potassium: decimalField({ max: 100_000, label: "Potassium" }),
 });
 const mealFormSchema = z.object({
   name: z.string().trim().min(1, "Give the meal a name").max(LIMITS.name),
@@ -32,7 +34,7 @@ const mealFormSchema = z.object({
 type MealFormInput = z.input<typeof mealFormSchema>;
 type MealFormOutput = z.output<typeof mealFormSchema>;
 
-const blankItem = { name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" };
+const blankItem = { name: "", serving: "", calories: "", protein: "", carbs: "", fat: "", sodium: "", potassium: "" };
 
 export function MealBuilderSheet() {
   const { mealBuilder, closeMealBuilder } = useAppUI();
@@ -77,6 +79,8 @@ function MealBuilder({
             protein: String(i.protein),
             carbs: String(i.carbs),
             fat: String(i.fat),
+            sodium: String(i.sodium ?? 0),
+            potassium: String(i.potassium ?? 0),
           }))
         : [blankItem],
     },
@@ -90,6 +94,8 @@ function MealBuilder({
       protein: Number(String(v.protein).replace(",", ".")) || 0,
       carbs: Number(String(v.carbs).replace(",", ".")) || 0,
       fat: Number(String(v.fat).replace(",", ".")) || 0,
+      sodium: Number(String(v.sodium).replace(",", ".")) || 0,
+      potassium: Number(String(v.potassium).replace(",", ".")) || 0,
     })),
   );
 
@@ -167,7 +173,15 @@ function MealBuilder({
                         </div>
                       ))}
                     </div>
-                    <FieldError>{err?.name?.message ?? err?.calories?.message ?? err?.protein?.message ?? err?.carbs?.message ?? err?.fat?.message}</FieldError>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["sodium", "potassium"] as const).map((k) => (
+                        <div key={k} className="grid gap-1">
+                          <Label htmlFor={`item-${f.id}-${k}`} className="text-xs">{k === "sodium" ? "Sodium (mg)" : "Potassium (mg)"}</Label>
+                          <Input id={`item-${f.id}-${k}`} inputMode="decimal" placeholder="0" className="h-10 px-2 tnum" {...register(`items.${i}.${k}`)} />
+                        </div>
+                      ))}
+                    </div>
+                    <FieldError>{err?.name?.message ?? err?.calories?.message ?? err?.protein?.message ?? err?.carbs?.message ?? err?.fat?.message ?? err?.sodium?.message ?? err?.potassium?.message}</FieldError>
                   </li>
                 );
               })}
@@ -199,6 +213,8 @@ function MealBuilder({
                           protein: String(s.protein),
                           carbs: String(s.carbs),
                           fat: String(s.fat),
+                          sodium: String(s.sodium ?? 0),
+                          potassium: String(s.potassium ?? 0),
                         };
                         if (firstBlank >= 0) items.update(firstBlank, item);
                         else items.append(item);

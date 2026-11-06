@@ -28,6 +28,8 @@ const nutritionFields = {
   protein: z.number().finite().min(0).max(LIMITS.macro).transform(oneDecimal),
   carbs: z.number().finite().min(0).max(LIMITS.macro).transform(oneDecimal),
   fat: z.number().finite().min(0).max(LIMITS.macro).transform(oneDecimal),
+  sodium: z.number().finite().min(0).max(100_000).transform(oneDecimal),
+  potassium: z.number().finite().min(0).max(100_000).transform(oneDecimal),
 };
 
 export const nutritionSchema = z.object(nutritionFields);
@@ -92,9 +94,9 @@ export type WorkoutInput = z.output<typeof workoutInputSchema>;
 
 export const goalsInputSchema = z.object({
   calories: z.number().int().min(500, "At least 500").max(LIMITS.calories),
-  protein: z.number().min(0).max(LIMITS.macro).transform(oneDecimal),
-  carbs: z.number().min(0).max(LIMITS.macro).transform(oneDecimal),
-  fat: z.number().min(0).max(LIMITS.macro).transform(oneDecimal),
+  protein: z.number().min(0).max(LIMITS.macro).transform(oneDecimal).default(0),
+  carbs: z.number().min(0).max(LIMITS.macro).transform(oneDecimal).default(0),
+  fat: z.number().min(0).max(LIMITS.macro).transform(oneDecimal).default(0),
 });
 export type GoalsInput = z.output<typeof goalsInputSchema>;
 
@@ -144,6 +146,8 @@ export const foodFormSchema = z.object({
   protein: decimalField({ max: LIMITS.macro, label: "Protein" }),
   carbs: decimalField({ max: LIMITS.macro, label: "Carbs" }),
   fat: decimalField({ max: LIMITS.macro, label: "Fat" }),
+  sodium: decimalField({ max: 100_000, label: "Sodium" }),
+  potassium: decimalField({ max: 100_000, label: "Potassium" }),
   meal: z.enum(MEAL_TYPES),
   date: isoDateSchema,
   time: timeSchema,
@@ -157,9 +161,6 @@ export const goalsFormSchema = z.object({
     (n) => n >= 500,
     "At least 500",
   ),
-  protein: decimalField({ max: LIMITS.macro, label: "Protein", required: true }),
-  carbs: decimalField({ max: LIMITS.macro, label: "Carbs", required: true }),
-  fat: decimalField({ max: LIMITS.macro, label: "Fat", required: true }),
 });
 export type GoalsFormInput = z.input<typeof goalsFormSchema>;
 export type GoalsFormOutput = z.output<typeof goalsFormSchema>;

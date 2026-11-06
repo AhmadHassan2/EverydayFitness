@@ -228,6 +228,8 @@ export function entryToInput(e: FoodEntry, overrides: Partial<FoodEntryInput> = 
     protein: e.protein,
     carbs: e.carbs,
     fat: e.fat,
+    sodium: e.sodium ?? 0,
+    potassium: e.potassium ?? 0,
     savedFoodId: e.savedFoodId,
     source: e.source,
     ...overrides,

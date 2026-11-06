@@ -37,7 +37,13 @@ function initialState(): LocalState {
 function read(): LocalState {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored) as LocalState;
+    if (stored) {
+      const state = JSON.parse(stored) as LocalState;
+      // Macro targets were removed in v1; keep historical records compatible
+      // without carrying a target into the current experience.
+      state.goals = state.goals.map((goal) => ({ ...goal, protein: 0, carbs: 0, fat: 0 }));
+      return state;
+    }
   } catch {
     // A fresh state is safer than preventing the tracker from opening.
   }

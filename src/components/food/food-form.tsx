@@ -46,7 +46,7 @@ export function FoodForm({ defaultValues, today, submitLabel, onSubmit, onDelete
   const implied = caloriesFromMacros({ protein: p, carbs: c, fat: f });
   const showImplied = implied > 0 && Math.abs(implied - kcal) > Math.max(25, kcal * 0.15);
 
-  const numberProps = (name: "calories" | "protein" | "carbs" | "fat") => ({
+  const numberProps = (name: "calories" | "protein" | "carbs" | "fat" | "sodium" | "potassium") => ({
     ...register(name),
     inputMode: "decimal" as const,
     autoComplete: "off",
@@ -105,6 +105,16 @@ export function FoodForm({ defaultValues, today, submitLabel, onSubmit, onDelete
               </Label>
               <Input id={`food-${m}`} placeholder="0" className="tnum" {...numberProps(m)} />
               <FieldError id={`${m}-error`}>{errors[m]?.message}</FieldError>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {(["sodium", "potassium"] as const).map((mineral) => (
+            <div key={mineral} className="grid gap-1.5">
+              <Label htmlFor={`food-${mineral}`}>{mineral === "sodium" ? "Sodium" : "Potassium"} (mg)</Label>
+              <Input id={`food-${mineral}`} placeholder="0" className="tnum" {...numberProps(mineral)} />
+              <FieldError id={`${mineral}-error`}>{errors[mineral]?.message}</FieldError>
             </div>
           ))}
         </div>

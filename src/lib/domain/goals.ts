@@ -1,7 +1,7 @@
 import type { GoalRecord, Goals, ISODate } from "./types";
 
 /** Starting point offered during onboarding. Users edit these before saving. */
-export const DEFAULT_GOALS: Goals = { calories: 2200, protein: 150, carbs: 230, fat: 70 };
+export const DEFAULT_GOALS: Goals = { calories: 2200, protein: 0, carbs: 0, fat: 0 };
 
 export function sortGoalHistory(history: readonly GoalRecord[]): GoalRecord[] {
   return [...history].sort((a, b) => a.effectiveDate.localeCompare(b.effectiveDate));

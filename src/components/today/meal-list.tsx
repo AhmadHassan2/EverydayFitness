@@ -82,6 +82,8 @@ function MealCard({ group, date, unit, timeZone }: { group: MealGroup; date: ISO
                     protein: e.protein,
                     carbs: e.carbs,
                     fat: e.fat,
+                    sodium: e.sodium ?? 0,
+                    potassium: e.potassium ?? 0,
                   })),
                 },
               })

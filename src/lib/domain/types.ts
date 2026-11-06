@@ -20,6 +20,10 @@ export interface Nutrition {
   carbs: number;
   /** grams */
   fat: number;
+  /** milligrams */
+  sodium?: number;
+  /** milligrams */
+  potassium?: number;
 }
 
 export type MacroKey = "protein" | "carbs" | "fat";
@@ -135,6 +139,7 @@ export interface WorkoutLog {
 
 export interface Goals {
   calories: number;
+  /** Retained for historical local records; macro targets are not shown in the UI. */
   protein: number;
   carbs: number;
   fat: number;

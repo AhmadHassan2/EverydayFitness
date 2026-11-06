@@ -95,6 +95,8 @@ function AddFood({ date, initialMeal, onDone }: { date: ISODate; initialMeal?: M
           protein: s.protein,
           carbs: s.carbs,
           fat: s.fat,
+          sodium: s.sodium ?? 0,
+          potassium: s.potassium ?? 0,
           savedFoodId: s.savedFoodId,
           source: s.savedFoodId ? "saved_food" : "manual",
         },
@@ -114,6 +116,8 @@ function AddFood({ date, initialMeal, onDone }: { date: ISODate; initialMeal?: M
         protein: it.protein,
         carbs: it.carbs,
         fat: it.fat,
+        sodium: it.sodium ?? 0,
+        potassium: it.potassium ?? 0,
         savedFoodId: null,
         source: "saved_meal" as const,
       })),
@@ -131,6 +135,8 @@ function AddFood({ date, initialMeal, onDone }: { date: ISODate; initialMeal?: M
           protein: v.protein,
           carbs: v.carbs,
           fat: v.fat,
+          sodium: v.sodium,
+          potassium: v.potassium,
         });
         savedFoodId = saved.id;
       } catch (e) {
@@ -148,6 +154,8 @@ function AddFood({ date, initialMeal, onDone }: { date: ISODate; initialMeal?: M
       protein: v.protein,
       carbs: v.carbs,
       fat: v.fat,
+      sodium: v.sodium,
+      potassium: v.potassium,
       savedFoodId,
       source: savedFoodId ? "saved_food" : "manual",
     };
@@ -166,6 +174,8 @@ function AddFood({ date, initialMeal, onDone }: { date: ISODate; initialMeal?: M
       protein: s ? String(s.protein) : "",
       carbs: s ? String(s.carbs) : "",
       fat: s ? String(s.fat) : "",
+      sodium: s ? String(s.sodium ?? 0) : "",
+      potassium: s ? String(s.potassium ?? 0) : "",
       meal,
       date,
       time: defaultTime(date, today, meal, tz),
@@ -240,6 +250,8 @@ function EditFood({ entry, onDone }: { entry: FoodEntry; onDone: () => void }) {
     protein: String(entry.protein),
     carbs: String(entry.carbs),
     fat: String(entry.fat),
+    sodium: String(entry.sodium ?? 0),
+    potassium: String(entry.potassium ?? 0),
     meal: entry.meal,
     date: entry.date,
     time: timeInZone(new Date(entry.loggedAt), tz),
@@ -261,6 +273,8 @@ function EditFood({ entry, onDone }: { entry: FoodEntry; onDone: () => void }) {
           protein: v.protein,
           carbs: v.carbs,
           fat: v.fat,
+          sodium: v.sodium,
+          potassium: v.potassium,
         },
       },
       {
