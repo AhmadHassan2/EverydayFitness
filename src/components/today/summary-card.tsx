@@ -3,14 +3,14 @@
 import { TriangleAlert } from "lucide-react";
 import type { EnergyUnit, FoodEntry, Goals } from "@/lib/domain/types";
 import { dayProgress } from "@/lib/domain/totals";
-import { energyLabel, formatEnergy, formatPercent } from "@/lib/domain/format";
+import { energyLabel, formatEnergy, formatNumber, formatPercent } from "@/lib/domain/format";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CalorieRing } from "./calorie-ring";
 import { MacroBars } from "./macro-bars";
 
 export function SummaryCard({ entries, goals, unit }: { entries: FoodEntry[]; goals: Goals; unit: EnergyUnit }) {
-  const { calories, macros } = dayProgress(entries, goals);
+  const { calories, macros, totals } = dayProgress(entries, goals);
   const u = energyLabel(unit);
   const pct = formatPercent(calories.ratio);
 
@@ -54,6 +54,16 @@ export function SummaryCard({ entries, goals, unit }: { entries: FoodEntry[]; go
       <div className="mt-5 border-t border-border pt-4">
         <MacroBars macros={macros} />
       </div>
+      <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
+        <div>
+          <dt className="text-[13px] text-muted-foreground">Sodium</dt>
+          <dd className="mt-1 text-[15px] font-semibold tnum">{formatNumber(totals.sodium ?? 0)} <span className="text-xs font-normal text-subtle-foreground">mg</span></dd>
+        </div>
+        <div>
+          <dt className="text-[13px] text-muted-foreground">Potassium</dt>
+          <dd className="mt-1 text-[15px] font-semibold tnum">{formatNumber(totals.potassium ?? 0)} <span className="text-xs font-normal text-subtle-foreground">mg</span></dd>
+        </div>
+      </dl>
     </Card>
   );
 }

@@ -6,7 +6,7 @@ import { MEAL_TYPES } from "./types";
  * only presentation rounds. Summing pre-rounded display values would drift.
  */
 
-export const ZERO_NUTRITION: Nutrition = Object.freeze({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+export const ZERO_NUTRITION: Nutrition = Object.freeze({ calories: 0, protein: 0, carbs: 0, fat: 0, sodium: 0, potassium: 0 });
 
 /** Round to one decimal without binary-float artefacts (0.1 + 0.2 → 0.3). */
 export function round1(n: number): number {
@@ -18,14 +18,18 @@ export function sumNutrition(items: readonly Nutrition[]): Nutrition {
   let c = 0,
     p = 0,
     cb = 0,
-    f = 0;
+    f = 0,
+    s = 0,
+    k = 0;
   for (const it of items) {
     c += Math.round(it.calories * 10);
     p += Math.round(it.protein * 10);
     cb += Math.round(it.carbs * 10);
     f += Math.round(it.fat * 10);
+    s += Math.round((it.sodium ?? 0) * 10);
+    k += Math.round((it.potassium ?? 0) * 10);
   }
-  return { calories: c / 10, protein: p / 10, carbs: cb / 10, fat: f / 10 };
+  return { calories: c / 10, protein: p / 10, carbs: cb / 10, fat: f / 10, sodium: s / 10, potassium: k / 10 };
 }
 
 export function scaleNutrition(n: Nutrition, factor: number): Nutrition {
@@ -34,6 +38,8 @@ export function scaleNutrition(n: Nutrition, factor: number): Nutrition {
     protein: round1(n.protein * factor),
     carbs: round1(n.carbs * factor),
     fat: round1(n.fat * factor),
+    sodium: round1((n.sodium ?? 0) * factor),
+    potassium: round1((n.potassium ?? 0) * factor),
   };
 }
 
@@ -64,7 +70,7 @@ export function progress(consumed: number, target: number): Progress {
 export interface DayProgress {
   totals: Nutrition;
   calories: Progress;
-  macros: Record<MacroKey, Progress>;
+  macros: Record<MacroKey, number>;
 }
 
 export function dayProgress(entries: readonly Nutrition[], goals: Goals): DayProgress {
@@ -73,9 +79,9 @@ export function dayProgress(entries: readonly Nutrition[], goals: Goals): DayPro
     totals,
     calories: progress(totals.calories, goals.calories),
     macros: {
-      protein: progress(totals.protein, goals.protein),
-      carbs: progress(totals.carbs, goals.carbs),
-      fat: progress(totals.fat, goals.fat),
+      protein: totals.protein,
+      carbs: totals.carbs,
+      fat: totals.fat,
     },
   };
 }

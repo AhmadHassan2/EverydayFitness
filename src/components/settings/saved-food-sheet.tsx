@@ -19,6 +19,8 @@ const schema = z.object({
   protein: decimalField({ max: LIMITS.macro, label: "Protein" }),
   carbs: decimalField({ max: LIMITS.macro, label: "Carbs" }),
   fat: decimalField({ max: LIMITS.macro, label: "Fat" }),
+  sodium: decimalField({ max: 100_000, label: "Sodium" }),
+  potassium: decimalField({ max: 100_000, label: "Potassium" }),
 });
 
 const SHORT = { calories: "kcal", protein: "P (g)", carbs: "C (g)", fat: "F (g)" } as const;
@@ -42,6 +44,8 @@ function SavedFoodForm({ food, onClose }: { food: SavedFood; onClose: () => void
       protein: String(food.protein),
       carbs: String(food.carbs),
       fat: String(food.fat),
+      sodium: String(food.sodium ?? 0),
+      potassium: String(food.potassium ?? 0),
     },
   });
   const e = formState.errors;
@@ -66,6 +70,14 @@ function SavedFoodForm({ food, onClose }: { food: SavedFood; onClose: () => void
             <Input id="sf-name" {...register("name")} aria-invalid={Boolean(e.name) || undefined} />
             <FieldError>{e.name?.message}</FieldError>
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            {(["sodium", "potassium"] as const).map((k) => (
+              <div key={k} className="grid gap-1.5">
+                <Label htmlFor={`sf-${k}`}>{k === "sodium" ? "Sodium" : "Potassium"} (mg)</Label>
+                <Input id={`sf-${k}`} inputMode="decimal" className="px-2 tnum" {...register(k)} aria-invalid={Boolean(e[k]) || undefined} />
+              </div>
+            ))}
+          </div>
           <div className="grid grid-cols-4 gap-2">
             {(["calories", "protein", "carbs", "fat"] as const).map((k) => (
               <div key={k} className="grid gap-1.5">
@@ -74,7 +86,7 @@ function SavedFoodForm({ food, onClose }: { food: SavedFood; onClose: () => void
               </div>
             ))}
           </div>
-          <FieldError>{e.calories?.message ?? e.protein?.message ?? e.carbs?.message ?? e.fat?.message}</FieldError>
+          <FieldError>{e.calories?.message ?? e.protein?.message ?? e.carbs?.message ?? e.fat?.message ?? e.sodium?.message ?? e.potassium?.message}</FieldError>
           <div className="grid gap-1.5">
             <Label htmlFor="sf-serving">
               Serving <span className="font-normal text-subtle-foreground">(optional)</span>

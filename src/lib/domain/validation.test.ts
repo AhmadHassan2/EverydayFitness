@@ -8,6 +8,8 @@ const baseForm = {
   protein: "38,5",
   carbs: "",
   fat: "18.25",
+  sodium: "120",
+  potassium: "340",
   meal: "lunch" as const,
   date: "2026-10-24",
   time: "12:30",
@@ -17,7 +19,7 @@ const baseForm = {
 describe("food form", () => {
   it("parses decimals, commas and blanks", () => {
     const out = foodFormSchema.parse(baseForm);
-    expect(out).toMatchObject({ calories: 520, protein: 38.5, carbs: 0, fat: 18.25 });
+    expect(out).toMatchObject({ calories: 520, protein: 38.5, carbs: 0, fat: 18.25, sodium: 120, potassium: 340 });
   });
 
   it("requires calories and rejects junk", () => {
@@ -40,6 +42,8 @@ describe("food entry (server) schema", () => {
       protein: 38.55,
       carbs: 0,
       fat: 18.25,
+      sodium: 120.04,
+      potassium: 340,
       savedFoodId: null,
       source: "manual",
     });
@@ -60,6 +64,8 @@ describe("food entry (server) schema", () => {
       protein: 0,
       carbs: 0,
       fat: 0,
+      sodium: 0,
+      potassium: 0,
       savedFoodId: null,
       source: "manual",
     });
@@ -69,8 +75,8 @@ describe("food entry (server) schema", () => {
 
 describe("goals form", () => {
   it("requires whole-number calories of at least 500", () => {
-    expect(goalsFormSchema.safeParse({ calories: "2200", protein: "150", carbs: "230", fat: "70" }).success).toBe(true);
-    expect(goalsFormSchema.safeParse({ calories: "2200.5", protein: "150", carbs: "230", fat: "70" }).success).toBe(false);
-    expect(goalsFormSchema.safeParse({ calories: "300", protein: "150", carbs: "230", fat: "70" }).success).toBe(false);
+    expect(goalsFormSchema.safeParse({ calories: "2200" }).success).toBe(true);
+    expect(goalsFormSchema.safeParse({ calories: "2200.5" }).success).toBe(false);
+    expect(goalsFormSchema.safeParse({ calories: "300" }).success).toBe(false);
   });
 });

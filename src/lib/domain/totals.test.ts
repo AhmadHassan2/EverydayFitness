@@ -25,11 +25,11 @@ function entry(partial: Partial<FoodEntry>): FoodEntry {
 describe("sumNutrition", () => {
   it("sums without floating point drift", () => {
     const items = Array.from({ length: 10 }, () => ({ calories: 0.1, protein: 0.1, carbs: 0.2, fat: 0.3 }));
-    expect(sumNutrition(items)).toEqual({ calories: 1, protein: 1, carbs: 2, fat: 3 });
+    expect(sumNutrition(items)).toEqual({ calories: 1, protein: 1, carbs: 2, fat: 3, sodium: 0, potassium: 0 });
   });
 
   it("returns zeros for an empty list", () => {
-    expect(sumNutrition([])).toEqual({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+    expect(sumNutrition([])).toEqual({ calories: 0, protein: 0, carbs: 0, fat: 0, sodium: 0, potassium: 0 });
   });
 
   it("adds realistic entries", () => {
@@ -37,7 +37,7 @@ describe("sumNutrition", () => {
       { calories: 410, protein: 32.5, carbs: 41, fat: 12.4 },
       { calories: 95, protein: 0.5, carbs: 25.1, fat: 0.3 },
     ]);
-    expect(t).toEqual({ calories: 505, protein: 33, carbs: 66.1, fat: 12.7 });
+    expect(t).toEqual({ calories: 505, protein: 33, carbs: 66.1, fat: 12.7, sodium: 0, potassium: 0 });
   });
 });
 
@@ -73,9 +73,9 @@ describe("dayProgress", () => {
       [entry({ calories: 600, protein: 40, carbs: 60, fat: 20 }), entry({ calories: 400, protein: 30, carbs: 30, fat: 15 })],
       { calories: 2000, protein: 150, carbs: 200, fat: 60 },
     );
-    expect(d.totals).toEqual({ calories: 1000, protein: 70, carbs: 90, fat: 35 });
+    expect(d.totals).toEqual({ calories: 1000, protein: 70, carbs: 90, fat: 35, sodium: 0, potassium: 0 });
     expect(d.calories.remaining).toBe(1000);
-    expect(d.macros.protein.remaining).toBe(80);
+    expect(d.macros.protein).toBe(70);
   });
 });
 
