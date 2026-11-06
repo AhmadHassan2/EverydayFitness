@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens.
+ * Neutral warm-gray scale, one accent (green), and semantic hues used only where
+ * they carry meaning: macros (protein / carbs / fat), over-target, rest days.
+ * Macro hues were validated for CVD separation in both modes (dataviz validator);
+ * light-mode carbs/fat sit below 3:1 on white, so they always ship with a visible
+ * text label beside them.
+ */
+:root {
+  color-scheme: light;
+  --background: #f6f6f4;
+  --surface: #ffffff;
+  --surface-2: #f1f1ef;
+  --foreground: #0b0b0b;
+  --muted-foreground: #64635e;
+  --subtle-foreground: #8a8983;
+  --border: rgb(11 11 11 / 0.08);
+  --border-strong: rgb(11 11 11 / 0.14);
+  --input: rgb(11 11 11 / 0.12);
+  --ring: #15803d;
+
+  --accent: #15803d;
+  --accent-foreground: #ffffff;
+  --accent-soft: #e5f2ea;
+  --accent-track: #e3ece6;
+
+  --over: #c2410c;
+  --over-soft: #fbeee6;
+
+  --protein: #2a78d6;
+  --protein-track: #e2ecf8;
+  --carbs: #eda100;
+  --carbs-track: #f7eed8;
+  --fat: #e87ba4;
+  --fat-track: #f8e7ee;
+
+  --rest: #8a8983;
+  --destructive: #c42b2b;
+
+  --chart-grid: #ecebe6;
+  --chart-axis: #8a8983;
+
+  --radius: 12px;
+  --shadow-sheet: 0 -8px 32px rgb(11 11 11 / 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0c0c0c;
+  --surface: #161616;
+  --surface-2: #1f1f1e;
+  --foreground: #f0efec;
+  --muted-foreground: #a3a29c;
+  --subtle-foreground: #84837d;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.14);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #34c06b;
+
+  --accent: #34c06b;
+  --accent-foreground: #08130c;
+  --accent-soft: #15291c;
+  --accent-track: #1d2a21;
+
+  --over: #f08a4b;
+  --over-soft: #2c1d14;
+
+  --protein: #3987e5;
+  --protein-track: #1a2636;
+  --carbs: #c98500;
+  --carbs-track: #2a2414;
+  --fat: #d55181;
+  --fat-track: #2c1a22;
+
+  --rest: #84837d;
+  --destructive: #ef6262;
+
+  --chart-grid: #262625;
+  --chart-axis: #84837d;
+
+  --shadow-sheet: 0 -8px 32px rgb(0 0 0 / 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-track: var(--accent-track);
+  --color-over: var(--over);
+  --color-over-soft: var(--over-soft);
+  --color-protein: var(--protein);
+  --color-protein-track: var(--protein-track);
+  --color-carbs: var(--carbs);
+  --color-carbs-track: var(--carbs-track);
+  --color-fat: var(--fat);
+  --color-fat-track: var(--fat-track);
+  --color-rest: var(--rest);
+  --color-destructive: var(--destructive);
+
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: var(--radius);
+  --radius-xl: 16px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    overscroll-behavior-y: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 220ms var(--ease-out-soft) both;
+}
+
+@utility animate-skeleton {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
