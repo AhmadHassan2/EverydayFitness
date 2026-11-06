@@ -14,3 +14,17 @@ test("opens an empty personal tracker without sign-in", async ({ page }) => {
   await expect(page.getByText(/demo|sample data/i)).toHaveCount(0);
   await noHorizontalOverflow(page);
 });
+
+test("quickly edits every daily goal from Today", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Goals" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByLabel("Daily calories (kcal)").fill("2500");
+  await page.getByLabel("Protein (g)").fill("180");
+  await page.getByLabel("Carbs (g)").fill("260");
+  await page.getByLabel("Fat (g)").fill("80");
+  await page.getByRole("button", { name: "Save goals" }).click();
+  await expect(page.getByText("Goals saved")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByText("2,500", { exact: true })).toBeVisible();
+});
