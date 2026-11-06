@@ -16,15 +16,8 @@ import type {
   WorkoutInput,
 } from "@/lib/domain/validation";
 
-export type DataMode = "demo" | "supabase";
-
-/**
- * Everything the UI can read or change. Two implementations: a local demo
- * store (browser only) and Supabase. UI code depends only on this interface.
- */
+/** Everything the UI can read or change. UI code depends only on this interface. */
 export interface Repository {
-  readonly mode: DataMode;
-
   getProfile(): Promise<Profile>;
   updateProfile(patch: ProfilePatch): Promise<Profile>;
 

@@ -1,34 +1,22 @@
 "use client";
 
 import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
-import { DEMO_COOKIE, isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Repository } from "./repository";
-import { DemoRepository } from "./demo/demo-repository";
-import { SupabaseRepository } from "./supabase/supabase-repository";
+import { LocalRepository } from "./local-repository";
 
 /*
- * The repository is chosen in the browser: Supabase when it is configured and
- * the visitor hasn't opted into the demo, otherwise the local demo store.
- * During SSR and hydration it is `null`, so data UI renders its loading state
- * on both sides and nothing mismatches.
+ * The local repository is created in the browser. During SSR and hydration it is
+ * `null`, so data UI renders its loading state on both sides and nothing mismatches.
  */
 
 let repo: Repository | null = null;
 
-function readDemoCookie(): boolean {
-  return document.cookie.split("; ").some((c) => c === `${DEMO_COOKIE}=1`);
-}
-
-export function isDemoSession(): boolean {
-  return !isSupabaseConfigured || readDemoCookie();
-}
-
-function getRepository(): Repository {
-  repo ??= isDemoSession() ? new DemoRepository() : new SupabaseRepository();
+function getRepository(): Repository | null {
+  repo ??= new LocalRepository();
   return repo;
 }
 
-/** Drops the cached repository (after sign-in/out or leaving demo mode). */
+/** Drops the cached repository after authentication changes. */
 export function resetRepository() {
   repo = null;
 }

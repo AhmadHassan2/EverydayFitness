@@ -37,7 +37,7 @@ interface RepoQueryOptions {
 function useRepoQuery<T>(key: QueryKey, fn: (repo: Repository) => Promise<T>, opts: RepoQueryOptions = {}) {
   const repo = useRepository();
   return useQuery({
-    queryKey: [repo?.mode ?? "pending", ...key],
+    queryKey: [repo ? "local" : "pending", ...key],
     queryFn: () => fn(repo!),
     enabled: repo !== null && (opts.enabled ?? true),
     placeholderData: opts.keepPrevious ? keepPreviousData : undefined,
@@ -112,7 +112,7 @@ export function useUpdateProfile() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (patch: ProfilePatch) => requireRepo(repo).updateProfile(patch),
-    onSuccess: (profile) => qc.setQueryData([repo?.mode, ...qk.profile], profile),
+    onSuccess: (profile) => qc.setQueryData(["local", ...qk.profile], profile),
   });
 }
 
@@ -122,7 +122,7 @@ export function useSetGoals() {
   return useMutation({
     mutationFn: ({ goals, effectiveDate }: { goals: GoalsInput; effectiveDate: ISODate }) =>
       requireRepo(repo).setGoals(goals, effectiveDate),
-    onSuccess: (history: GoalRecord[]) => qc.setQueryData([repo?.mode, ...qk.goals], history),
+    onSuccess: (history: GoalRecord[]) => qc.setQueryData(["local", ...qk.goals], history),
   });
 }
 
@@ -294,7 +294,7 @@ export function useDeleteSavedFood() {
   return useMutation({
     mutationFn: (food: SavedFood) => requireRepo(repo).deleteSavedFood(food.id),
     onMutate: async (food) => {
-      const key = [repo?.mode, ...qk.savedFoods];
+      const key = ["local", ...qk.savedFoods];
       const prev = qc.getQueryData<SavedFood[]>(key);
       qc.setQueryData<SavedFood[]>(key, (list) => list?.filter((f) => f.id !== food.id));
       return { prev, key };
@@ -324,7 +324,7 @@ export function useDeleteSavedMeal() {
   return useMutation({
     mutationFn: (meal: SavedMeal) => requireRepo(repo).deleteSavedMeal(meal.id),
     onMutate: async (meal) => {
-      const key = [repo?.mode, ...qk.savedMeals];
+      const key = ["local", ...qk.savedMeals];
       const prev = qc.getQueryData<SavedMeal[]>(key);
       qc.setQueryData<SavedMeal[]>(key, (list) => list?.filter((m) => m.id !== meal.id));
       return { prev, key };

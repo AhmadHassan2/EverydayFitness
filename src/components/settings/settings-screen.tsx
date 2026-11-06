@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Ellipsis, Layers, LogOut, Pencil, Plus, RotateCcw, Star, Trash2 } from "lucide-react";
+import { Ellipsis, Layers, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { SavedFood, SavedMeal } from "@/lib/domain/types";
 import { deviceTimeZone } from "@/lib/domain/dates";
@@ -19,10 +18,6 @@ import {
   useToday,
   useUpdateProfile,
 } from "@/lib/data/hooks";
-import { useRepository } from "@/lib/data/provider";
-import { DemoRepository } from "@/lib/data/demo/demo-repository";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { leaveDemo, signOut } from "@/lib/session";
 import { useTheme, type ThemePreference } from "@/components/providers/theme";
 import { useAppUI } from "@/components/shell/app-ui";
 import { PageHeader } from "@/components/shell/page-header";
@@ -71,7 +66,6 @@ export function SettingsScreen() {
         <div className="grid gap-6">
           <SavedFoodsSection />
           <SavedMealsSection />
-          <AccountSection />
         </div>
       </div>
     </>
@@ -294,57 +288,3 @@ function RowMenu({ label, onEdit, onDelete }: { label: string; onEdit: () => voi
   );
 }
 
-function AccountSection() {
-  const repo = useRepository();
-  const profile = useProfile();
-  const qc = useQueryClient();
-  const [confirmReset, setConfirmReset] = useState(false);
-
-  if (repo?.mode === "demo") {
-    return (
-      <Section id="demo" title="Demo mode">
-        <Card className="p-4">
-          <p className="text-[15px]">You&apos;re exploring with sample data.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Everything you log is saved on this device only and is kept separate from any account.
-            {isSupabaseConfigured ? "" : " To sync across devices, connect Supabase (see README) and sign in."}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => setConfirmReset(true)}>
-              <RotateCcw aria-hidden /> Reset demo data
-            </Button>
-            {isSupabaseConfigured ? (
-              <Button size="sm" onClick={leaveDemo}>
-                Sign in or create account
-              </Button>
-            ) : null}
-          </div>
-        </Card>
-        <ConfirmDialog
-          open={confirmReset}
-          onOpenChange={setConfirmReset}
-          title="Reset demo data?"
-          description="Your changes are replaced with fresh sample data."
-          confirmLabel="Reset"
-          onConfirm={() => {
-            if (repo instanceof DemoRepository) repo.reset();
-            qc.invalidateQueries();
-            toast.success("Demo data reset");
-          }}
-        />
-      </Section>
-    );
-  }
-
-  return (
-    <Section title="Account">
-      <Card>
-        <Row label="Signed in as" hint={profile.data?.email ?? " "}>
-          <Button variant="outline" size="sm" onClick={() => signOut()}>
-            <LogOut aria-hidden /> Sign out
-          </Button>
-        </Row>
-      </Card>
-    </Section>
-  );
-}

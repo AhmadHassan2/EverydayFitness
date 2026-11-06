@@ -10,7 +10,7 @@ A mobile-first calorie, macro and training tracker. It installs to the iPhone ho
 
 ## Stack
 
-Next.js 16 (App Router, Cache Components), TypeScript, Tailwind CSS v4, Radix primitives in the shadcn/ui style, Lucide, Recharts, TanStack Query, React Hook Form + Zod, Supabase (Postgres + Auth), Vitest, and Playwright.
+Next.js 16 (App Router, Cache Components), TypeScript, Tailwind CSS v4, Radix primitives in the shadcn/ui style, Lucide, Recharts, TanStack Query, React Hook Form + Zod, Vitest, and Playwright.
 
 ## Getting started
 
@@ -19,25 +19,9 @@ pnpm install
 pnpm dev            # http://localhost:3000
 ```
 
-With no Supabase variables set, the app runs in **demo mode**. It is seeded with about 90 days of sample data that lives only in this browser's localStorage (`ef:demo:v2`) and is never sent anywhere. A "Demo" badge stays in the header, and you can reset the data from Settings.
+The app is a private, on-device tracker. It starts empty and saves your data in this browser's local storage; there are no accounts, sign-in screens, sample entries, or external database.
 
 To try it on a phone, open the network URL that `pnpm dev` prints while the phone is on the same Wi-Fi. In Safari, use Share → Add to Home Screen to install it.
-
-## Connecting Supabase
-
-1. Create a Supabase project.
-2. Apply the schema, either with `supabase link` then `supabase db push`, or by pasting `supabase/migrations/20261024000000_init.sql` into the SQL editor.
-3. Copy `.env.example` to `.env.local` and fill in:
-
-   | Variable | Value |
-   | --- | --- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon / publishable key |
-   | `NEXT_PUBLIC_SITE_URL` | Public URL of the app, used in auth emails |
-
-4. In Supabase → Authentication → URL configuration, add `<site-url>/auth/callback` as a redirect URL.
-
-Once the variables are set, signed-out visitors go to `/login` (email + password, or a magic link). They can still choose **Explore the demo**, which stays fully separate from their account data. New accounts set their goals during onboarding.
 
 The service-role key is never used, and it should not be added.
 
@@ -48,25 +32,18 @@ src/
   app/                 routes (thin), server actions, PWA manifest & icons
   components/          UI by feature: today, food, workout, history, analytics, settings, shell, ui
   lib/domain/          pure business logic (dates, totals, goals, workout, analytics, validation)
-  lib/data/            Repository interface + demo and Supabase implementations, query hooks
-  lib/supabase/        browser/server clients, proxy session refresh, DB types
-supabase/migrations/   schema, constraints, RLS
+  lib/data/            Repository interface + local-storage implementation, query hooks
 e2e/                   Playwright smoke tests (375px, 390px, desktop)
 ```
 
-- UI talks only to `Repository` through the hooks in `lib/data/hooks.ts`. It never touches Supabase or localStorage directly.
-- **Reads** run in the browser with the user's session; row level security limits every query to the user's own rows. **Writes** go through server actions (`src/app/actions/data.ts`), which re-read the user and re-validate input with the same Zod schemas the forms use. Database CHECK constraints sit underneath both.
+- UI talks only to `Repository` through the hooks in `lib/data/hooks.ts`. It never touches local storage directly.
+- Data is saved locally in the browser after each change. Clearing site data or using a different browser/device starts a separate, empty tracker.
 - Mutations are optimistic, roll back on error, and then refetch.
 - **Future nutrition database or barcode scanner:** `food_entries.source` and `external_ref` are already in the schema, and `FoodSearchProvider` (`lib/domain/types.ts`) is the interface a lookup service would implement. Its results merge into quick-pick search next to personal history.
 
 ### Data model
 
-`profiles`, `goal_history`, `food_entries`, `saved_foods`, `saved_meals` + `saved_meal_items`, `workout_logs`. Every table has RLS with owner-only policies.
-
-- One `workout_logs` row per user per day (unique constraint). No row means "not logged". Rest days cannot carry a workout type or duration (check constraint).
-- Calories are `numeric(7,1)` and macros are `numeric(6,1)` grams, with range checks.
-- Saved-food names are unique per user, case-insensitively.
-- Cross-user references (an entry pointing at someone else's saved food, or a meal item in someone else's meal) are rejected by triggers.
+One local profile holds goal history, food entries, favourites, saved meals, and workouts. No row for a day means it is not logged; rest days never carry a workout type or duration.
 
 ### Dates & time zones
 
@@ -97,4 +74,4 @@ Totals are summed from stored values (0.1 precision) and rounded only for displa
 | `pnpm lint` | ESLint |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm test` | Vitest unit tests for dates, totals, goals, workouts, analytics, search and validation |
-| `pnpm test:e2e` | Playwright smoke tests in demo mode (`pnpm exec playwright install chromium` first) |
+| `pnpm test:e2e` | Playwright smoke tests for the account-only access gate (`pnpm exec playwright install chromium` first) |
